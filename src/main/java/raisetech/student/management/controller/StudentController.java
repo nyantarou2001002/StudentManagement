@@ -51,8 +51,9 @@ public class StudentController {
   @GetMapping("/newStudent")
   public String newStudent(Model model){
     StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudent(new Student());
     studentDetail.setStudentCourses(Arrays.asList(new StudentCourses()));
-    model.addAttribute("studentDetail", new StudentDetail());
+    model.addAttribute("studentDetail", studentDetail);
     return "registerStudent";
   }
 
