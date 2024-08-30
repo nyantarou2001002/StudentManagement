@@ -1,6 +1,7 @@
 package raisetech.student.management.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,8 @@ public class StudentController {
 
   @GetMapping("/newStudent")
   public String newStudent(Model model){
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudentCourses(Arrays.asList(new StudentCourses()));
     model.addAttribute("studentDetail", new StudentDetail());
     return "registerStudent";
   }
@@ -58,7 +61,10 @@ public class StudentController {
     if(result.hasErrors()){
       return "registerStudent";
     }
-    //新規受講生情報を登録する処理を実装する
+    //①新規受講生情報を登録する処理を実装する
+    service.registerStudent(studentDetail);
+
+
 
 
     return "redirect:/studentList";
