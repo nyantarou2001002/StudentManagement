@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import raisetech.student.management.controller.conveter.StudentConverter;
@@ -41,18 +42,22 @@ public class StudentController {
     return "studentList";
   }
 
-
-
-  @GetMapping("/studentCourseList")
-  public List<StudentCourses> getStudentCourseList(){
-    return service.searchStudentCourseList();
+  @GetMapping("/student/{id}")
+  public String getStudent(@PathVariable String id, Model model){
+    StudentDetail studentDetail = service.searchStudent(id);
+    model.addAttribute("studentDetail", studentDetail);
+    return "updateStudent";
   }
+
+
+
 
   @GetMapping("/newStudent")
   public String newStudent(Model model){
     StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudent(new Student());
     studentDetail.setStudentCourses(Arrays.asList(new StudentCourses()));
-    model.addAttribute("studentDetail", new StudentDetail());
+    model.addAttribute("studentDetail", studentDetail);
     return "registerStudent";
   }
 
@@ -61,12 +66,19 @@ public class StudentController {
     if(result.hasErrors()){
       return "registerStudent";
     }
-    //①新規受講生情報を登録する処理を実装する
     service.registerStudent(studentDetail);
+    return "redirect:/studentList";
+  }
 
 
 
 
+  @PostMapping("/updateStudent")
+  public String updateStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result){
+    if(result.hasErrors()){
+      return "updateStudent";
+    }
+    service.updateStudent(studentDetail);
     return "redirect:/studentList";
   }
 
