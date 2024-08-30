@@ -45,16 +45,12 @@ public interface StudentRepository {
 
   @Update(
       "UPDATE students SET name = #{name}, kana_name = #{kanaName}, nickname = #{nickname},"
-          + " email = #{email}, area = #{area}, age = #{age}, sex = #{sex}, remark = #{remark}, isDeleted = #{isDeleted} WHERE id = #{id})")
+          + " email = #{email}, area = #{area}, age = #{age}, sex = #{sex}, remark = #{remark}, isDeleted = #{isDeleted} WHERE id = #{id}")
   void updaterStudent(Student student);
 
   @Update(
-      "UPDATE students_courses SET course_name = #{courseName})WHERE student_id = #{studentId}")
+      "UPDATE students_courses SET course_name = #{courseName} WHERE student_id = #{studentId}")
   void updateStudentsCourses(StudentCourses studentCourses);
-
-
-
-
 
 
 

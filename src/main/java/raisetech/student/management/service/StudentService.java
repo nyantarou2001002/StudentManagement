@@ -41,23 +41,23 @@ public class StudentService {
   }
 
   @Transactional
-  public void  registerStudent(StudentDetail studentDetail){
+  public void  registerStudent(StudentDetail studentDetail) {
     repository.registerStudent((studentDetail.getStudent()));
     //  TODO:コース情報登録も行う
-    for(StudentCourses studentCourses : studentDetail.getStudentCourses()){
+    for (StudentCourses studentCourses : studentDetail.getStudentCourses()) {
       studentCourses.setStudentId(studentDetail.getStudent().getId());
       studentCourses.setCourseStartAt(LocalDateTime.now());
       studentCourses.setCourseEndAt(LocalDateTime.now().plusYears(1));
       repository.registerStudentsCourses(studentCourses);
     }
-
+  }
   @Transactional
   public void  updateStudent(StudentDetail studentDetail){
     repository.updaterStudent(studentDetail.getStudent());
     for(StudentCourses studentCourses : studentDetail.getStudentCourses()){
       studentCourses.setStudentId(studentDetail.getStudent().getId());
       repository.updateStudentsCourses(studentCourses);
-    }
+  }
 
 
 
