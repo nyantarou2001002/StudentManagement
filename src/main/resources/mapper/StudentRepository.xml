@@ -17,24 +17,19 @@
   </select>
 
   <!--受講生コースの検索-->
-  <select id="searchStudentCourseList" resultType="raisetech.student.management.data.Student">
+  <select id="searchStudentCourseList" resultType="raisetech.student.management.data.StudentCourse">
     SELECT *
     FROM students_courses
   </select>
 
   <!--受講生IDに基づくコースの検索-->
-  <select id="searchStudentCourse" resultType="raisetech.student.management.data.Student">
+  <select id="searchStudentCourse" resultType="raisetech.student.management.data.StudentCourse">
     SELECT *
     FROM students_courses
     WHERE student_id = #{studentId}
   </select>
 
-  <!--受講生IDに基づくコースの検索-->
-  <select id="searchStudentCourse" resultType="raisetech.student.management.data.Student">
-    SELECT *
-    FROM students_courses
-    WHERE student_id = #{studentId}
-  </select>
+
 
   <insert id="registerStudent" useGeneratedKeys="true" keyProperty="id">
     INSERT INTO students
