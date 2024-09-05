@@ -29,6 +29,8 @@ public class StudentService {
     this.converter = converter;
   }
 
+
+
   /**
    * 受講生の一覧検索を行います。
    * 全件検索を行うので、条件指定は行いません。
@@ -71,7 +73,7 @@ public class StudentService {
 
     repository.registerStudent(student);
     studentDetail.getStudentCourseList().forEach(studentCourses -> {
-      initStudentsCourse(studentCourses, student);
+      initStudentsCourse(studentCourses, student.getId());
       repository.registerStudentCourse(studentCourses);
     });
     return studentDetail;
@@ -81,12 +83,12 @@ public class StudentService {
    * 受講生コース情報を登録する際の初期情報を設定する。
    *
    * @param studentCourses　受講生コース情報
-   * @param student　受講生
+   * @param id　受講生
    */
-  private void initStudentsCourse(StudentCourse studentCourses, Student student) {
+  void initStudentsCourse(StudentCourse studentCourses, String id) {
     LocalDateTime now = LocalDateTime.now();
 
-    studentCourses.setStudentId(student.getId());
+    studentCourses.setStudentId(id);
     studentCourses.setCourseStartAt(now);
     studentCourses.setCourseEndAt(now.plusYears(1));
   }
