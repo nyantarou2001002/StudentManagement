@@ -3,11 +3,9 @@ package raisetech.student.management.repository;
 
 
 import java.util.List;
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import raisetech.student.management.data.CourseStatus;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentCourse;
 
@@ -42,6 +40,16 @@ public interface StudentRepository {
   List<StudentCourse> searchStudentCourseList();
 
   /**
+   *
+   * @param id 受講生コースID
+   * @return 受講生コースIDに紐づく受講生コース情報
+   */
+  StudentCourse searchStudentCourse(int id);
+
+  @Select("SELECT * FROM student_courses WHERE student_id = #{studentId}")
+  List<StudentCourse> searchStudentCourseListForStudent(String studentid);
+
+  /**
    * 受講生IDに紐づく受講生コース情報を検索します。
    *
    * @param studentId 受講生ID
@@ -49,6 +57,21 @@ public interface StudentRepository {
    */
   //@Select("SELECT * FROM students_courses WHERE student_id = #{studentId}")
   List<StudentCourse> searchStudentCourse(String studentId);
+
+  /**
+   * 受講生のコース申込状況の全件検索を行います。
+   *
+   * @return コース申込状況(全件)
+   */
+  List<CourseStatus> searchCourseStatusList();
+
+  /**
+   * 受講生コースIDに紐づく受講生コース申込状況を検索します。
+   *
+   * @param courseId 受講生コースID
+   * @return 受講生コースIDに紐づく受講生コース申込状況
+   */
+  CourseStatus searchCourseStatus(int courseId);
 
   /**
    * 受講生を新規登録します。
@@ -74,6 +97,13 @@ public interface StudentRepository {
   //@Options(useGeneratedKeys = true, keyProperty = "id")
   void registerStudentCourse(StudentCourse studentCourse);
 
+  /**
+   * 受講生コースの申し込み状況を新規登録します。IDに関しては自動採番を行う。
+   *
+   * @param courseStatus 新規の受講生コースの申込状況
+   */
+  void registerCourseStatus(CourseStatus courseStatus);
+
 
   /**
    * 受講生を更新します。
@@ -83,7 +113,7 @@ public interface StudentRepository {
   //@Update(
       //"UPDATE students SET name = #{name}, kana_name = #{kanaName}, nickname = #{nickname},"
           //+ " email = #{email}, area = #{area}, age = #{age}, sex = #{sex}, remark = #{remark}, isDeleted = #{isDeleted} WHERE id = #{id}")
-  void updaterStudent(Student student);
+  void updateStudent(Student student);
 
   /**
    * 受講生コース情報のコース名を更新します。
@@ -94,6 +124,13 @@ public interface StudentRepository {
   //@Update(
       //"UPDATE students_courses SET course_name = #{courseName} WHERE student_id = #{studentId}")
   void updateStudentCourse(StudentCourse studentCourse);
+
+  /**
+   * 受講生コースの申込状況を更新します。
+   *
+   * @param courseStatus 受講生コースの申込状況の更新情報
+   */
+  void updateCourseStatus(CourseStatus courseStatus);
 
 
 

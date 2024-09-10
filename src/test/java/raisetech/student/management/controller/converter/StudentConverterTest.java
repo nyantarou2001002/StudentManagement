@@ -1,7 +1,6 @@
-package raisetech.student.management.controller.conveter;
+package raisetech.student.management.controller.converter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -1,10 +1,15 @@
 package raisetech.student.management.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import jakarta.validation.ConstraintViolation;
@@ -18,19 +23,32 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.Mockito;
+import org.springdoc.api.OpenApiResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import raisetech.student.management.data.CourseStatus;
 import raisetech.student.management.data.Student;
+import raisetech.student.management.data.StudentCourse;
+import raisetech.student.management.domain.CourseDetail;
 import raisetech.student.management.domain.StudentDetail;
 import raisetech.student.management.service.StudentService;
 
 
-@WebMvcTest(StudentController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 class StudentControllerTest {
 
   @Autowired
@@ -41,14 +59,37 @@ class StudentControllerTest {
 
   private Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
+  private static StudentCourse createTestCourseDetail(String id){
+    StudentCourse studentCourse = new StudentCourse();
+    studentCourse.setId(id);
+
+    CourseStatus courseStatus = new CourseStatus();
+    courseStatus.setCourseId(id);
+
+    return studentCourse;
+  }
+
   @Test
   void 受講生詳細の一覧検索が実行できて空のリストが返ってくること() throws Exception{
-    mockMvc.perform(MockMvcRequestBuilders.get("/studentList"))
-        .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(content().json("[]"));
+    Boolean deleted = false;
 
-    Mockito.verify(service, Mockito.times(1)).searchStudentList();
+    mockMvc.perform(MockMvcRequestBuilders.get("/studentList")
+            .param("deleted", String.valueOf(deleted))) // paramをgetの直後に
+        .andExpect(status().isOk());
+
+    Mockito.verify(service, Mockito.times(1)).searchStudentList(deleted);
   }
+
+
+  @Test
+  void 受講生コース詳細の一覧検索が実行できて空リストが返ってくること() throws Exception {
+      mockMvc.perform(MockMvcRequestBuilders.get("/studentList/courses"))
+          .andExpect(status().isOk());
+
+      verify(service, times(1)).searchStudentCourseList();
+
+  }
+
 
   @Test
   void 受講生詳細の検索が実行できて空で返ってくること() throws Exception{
@@ -58,6 +99,58 @@ class StudentControllerTest {
 
     verify(service, times(1)).searchStudent(id);
   }
+
+  @Test
+  void 受講生コース詳細の検索が実行できて指定したIDに紐づくcourseDetailが返ってくること() throws Exception{
+    String id = "999";
+    StudentCourse studentCourse = createTestCourseDetail(id);
+    when(service.searchStudentCourse(Integer.parseInt(id))).thenReturn(studentCourse);
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/studentList/courses/detail").param("id", id))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.id").value(id))
+        .andExpect(jsonPath("$.courseStatus").doesNotExist()); // courseStatusがnullの場合
+
+    verify(service, times(1)).searchStudentCourse(Integer.parseInt(id));
+  }
+
+
+
+  @Test
+  void 受講生コース詳細の検索を行った際に入力チェックにかかること() throws Exception {
+    String id = "999";
+    when(service.searchStudentCourse(Integer.parseInt(id))).thenThrow(
+        new OpenApiResourceNotFoundException("受講生ID　「" + id + "」は存在しません。"));
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/studentList/courses/detail").param("id", id))
+        .andExpect(status().isNotFound())
+        .andExpect(result -> assertTrue(
+            result.getResolvedException() instanceof OpenApiResourceNotFoundException))
+        .andExpect(result -> assertEquals("受講生ID　「" + id + "」は存在しません。",
+            result.getResolvedException().getMessage()));
+
+    verify(service, times(1)).searchStudentCourse(Integer.parseInt(id));
+  }
+
+
+
+  @Test
+  void コース申込状況の更新が実行できて＿更新処理が成功しました＿というメッセージが返ってくること() throws Exception {
+    mockMvc.perform(MockMvcRequestBuilders.put("/studentList/courses/statuses/update")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(
+                """
+                    {"courseId":1, "status":"受講中"}
+                    """
+            ))
+        .andExpect(status().isOk())
+        .andExpect(content().string("更新処理が成功しました"));
+
+    verify(service, times(1)).updateCourseStatus(any());
+  }
+
+
 
   @Test
   void 受講生詳細の登録が実行できて空で返ってくること() throws Exception {
@@ -86,6 +179,8 @@ class StudentControllerTest {
 
     verify(service, times(1)).registerStudent(any());
   }
+
+
 
   @Test
   void 受講生詳細の更新が実行できて空で返ってくること()throws Exception{
@@ -123,9 +218,10 @@ class StudentControllerTest {
   @Test
   void 受講生詳細の例外APIが実行できてステータスが400で返ってくること() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders.get("/exception"))
-        .andExpect(status().is4xxClientError())
-        .andExpect(content().string("このAPIは現在利用できません。古いURLとなっています。"));
+        .andExpect(status().isBadRequest()) // ステータスコードが400であることを確認
+        .andExpect(content().string("このAPIは現在利用できません。古いURLとなっています。")); // レスポンス内容を確認
   }
+
 
 
   @Test
@@ -163,6 +259,38 @@ class StudentControllerTest {
 
 
   }
+
+  @Test
+  void コース申込状況の入力チェックができて入力された情報が適切な時に入力チェックがかからないこと() throws Exception{
+    CourseStatus courseStatus = new CourseStatus();
+
+    courseStatus.setId(111);
+    courseStatus.setCourseId("222");
+    courseStatus.setStatus("仮申込");
+
+    Set<ConstraintViolation<CourseStatus>> violations = validator.validate(courseStatus);
+
+    assertEquals(0, violations.size());
+
+  }
+
+  @Test
+  void コース申込状況の入力チェックができて入力された値に不適札なものがある場合に入力チェックがかかること() throws  Exception{
+    CourseStatus courseStatus = new CourseStatus();
+
+    courseStatus.setId(111);
+    courseStatus.setCourseId("222");
+
+    courseStatus.setStatus(null);
+
+    Set<ConstraintViolation<CourseStatus>> violations = validator.validate(courseStatus);
+
+    assertEquals(1,violations.size());
+
+
+  }
+
+
 
 
 }

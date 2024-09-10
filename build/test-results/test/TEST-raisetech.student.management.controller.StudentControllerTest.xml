@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="raisetech.student.management.controller.StudentControllerTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2024-09-10T08:36:52" hostname="itouakiratarounoMacBook-Pro.local" time="0.685">
+  <properties/>
+  <testcase name="受講生コース詳細の検索が実行できて指定したIDに紐づくcourseDetailが返ってくること()" classname="raisetech.student.management.controller.StudentControllerTest" time="0.186"/>
+  <testcase name="受講生詳細の検索が実行できて空で返ってくること()" classname="raisetech.student.management.controller.StudentControllerTest" time="0.013"/>
+  <testcase name="受講生詳細の受講生でIDに数字以外を用いた時に入力チェックにかかること()" classname="raisetech.student.management.controller.StudentControllerTest" time="0.089"/>
+  <testcase name="受講生詳細の例外APIが実行できてステータスが400で返ってくること()" classname="raisetech.student.management.controller.StudentControllerTest" time="0.009"/>
+  <testcase name="受講生コース詳細の検索を行った際に入力チェックにかかること()" classname="raisetech.student.management.controller.StudentControllerTest" time="0.032"/>
+  <testcase name="受講生詳細の登録が実行できて空で返ってくること()" classname="raisetech.student.management.controller.StudentControllerTest" time="0.155"/>
+  <testcase name="受講生詳細の受講生で適切な値を入力チェックに異常が発生しないこと()" classname="raisetech.student.management.controller.StudentControllerTest" time="0.012"/>
+  <testcase name="コース申込状況の入力チェックができて入力された値に不適札なものがある場合に入力チェックがかかること()" classname="raisetech.student.management.controller.StudentControllerTest" time="0.025"/>
+  <testcase name="受講生詳細の一覧検索が実行できて空のリストが返ってくること()" classname="raisetech.student.management.controller.StudentControllerTest" time="0.018"/>
+  <testcase name="受講生詳細の更新が実行できて空で返ってくること()" classname="raisetech.student.management.controller.StudentControllerTest" time="0.02"/>
+  <testcase name="コース申込状況の入力チェックができて入力された情報が適切な時に入力チェックがかからないこと()" classname="raisetech.student.management.controller.StudentControllerTest" time="0.008"/>
+  <testcase name="受講生コース詳細の一覧検索が実行できて空リストが返ってくること()" classname="raisetech.student.management.controller.StudentControllerTest" time="0.011"/>
+  <testcase name="コース申込状況の更新が実行できて＿更新処理が成功しました＿というメッセージが返ってくること()" classname="raisetech.student.management.controller.StudentControllerTest" time="0.015"/>
+  <system-out><![CDATA[17:36:49.166 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [raisetech.student.management.controller.StudentControllerTest]: StudentControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+17:36:49.373 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration raisetech.student.management.Application for test class raisetech.student.management.controller.StudentControllerTest
+17:36:49.529 [Test worker] INFO org.hibernate.validator.internal.util.Version -- HV000001: Hibernate Validator 8.0.1.Final
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.4)
+
+2024-09-10T17:36:49.851+09:00  INFO 17843 --- [student.management] [    Test worker] r.s.m.controller.StudentControllerTest   : Starting StudentControllerTest using Java 21.0.4 with PID 17843 (started by itokotaro in /Users/itokotaro/Desktop/IdeaProjects/StudentManagement)
+2024-09-10T17:36:49.852+09:00  INFO 17843 --- [student.management] [    Test worker] r.s.m.controller.StudentControllerTest   : No active profile set, falling back to 1 default profile: "default"
+2024-09-10T17:36:52.053+09:00  INFO 17843 --- [student.management] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-09-10T17:36:52.199+09:00  INFO 17843 --- [student.management] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2024-09-10T17:36:52.201+09:00  INFO 17843 --- [student.management] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-09-10T17:36:52.294+09:00  INFO 17843 --- [student.management] [    Test worker] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:testdb'
+2024-09-10T17:36:52.342+09:00  INFO 17843 --- [student.management] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2024-09-10T17:36:52.343+09:00  INFO 17843 --- [student.management] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2024-09-10T17:36:52.344+09:00  INFO 17843 --- [student.management] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2024-09-10T17:36:52.376+09:00  INFO 17843 --- [student.management] [    Test worker] r.s.m.controller.StudentControllerTest   : Started StudentControllerTest in 2.697 seconds (process running for 4.316)
+]]></system-out>
+  <system-err><![CDATA[WARNING: A Java agent has been loaded dynamically (/Users/itokotaro/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.14.12/be4984cb6fd1ef1d11f218a648889dfda44b8a15/byte-buddy-agent-1.14.12.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+</testsuite>
