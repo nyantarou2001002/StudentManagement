@@ -3,35 +3,30 @@ package raisetech.student.management.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+import raisetech.student.management.data.CourseSearchCriteria;
 import raisetech.student.management.data.CourseStatus;
 import raisetech.student.management.data.StudentCourse;
-import raisetech.student.management.domain.CourseDetail;
+import raisetech.student.management.data.StudentSearchCriteria;
 import raisetech.student.management.domain.IntegratedDetail;
 import raisetech.student.management.domain.StudentDetail;
-import raisetech.student.management.exception.TestException;
 import raisetech.student.management.service.StudentService;
 
 /**
@@ -52,15 +47,17 @@ public class StudentController {
 
 
   /**
-   * 受講生詳細一覧検索です。 リクエストパラメーターでdeletedの値を指定することにより、現在の受講生または過去の受講生に絞って検索できます。
+   * 受講生詳細一覧検索です。 リクエストパラメーターを指定すると絞り込み検索ができます。
    *
+   * @param criteria 検索条件
    * @return 受講生詳細一覧
    */
   @Operation(summary = "一覧検索", description = "受講生の一覧を検索します。")
   @GetMapping("/studentList")
-  public List<StudentDetail> getStudentList(
-      @Parameter(description = "受講生の削除フラグ") @RequestParam(required = false) Boolean deleted) {
-    return service.searchStudentList(deleted);
+  //public List<StudentDetail> getStudentList(
+      //@Parameter(description = "受講生の削除フラグ") @RequestParam(required = false) Boolean deleted) {
+  public List<StudentDetail> getStudentList(@Valid @ModelAttribute StudentSearchCriteria criteria){
+    return service.searchStudentList(criteria);
   }
 
   /**
@@ -71,8 +68,8 @@ public class StudentController {
   @Operation(summary = "受講生コース一覧検索", description = "条件に合致する受講生コースの一覧を検索します。")
   @GetMapping("/studentList/courses")
   //public List<CourseDetail> getStudentCoursesList() {
-  public List<StudentCourse> getStudentCoursesList(){
-    return service.searchStudentCourseList();
+  public List<StudentCourse> getStudentCoursesList(@Valid @ModelAttribute CourseSearchCriteria criteria){
+    return service.searchStudentCourseList(criteria);
   }
 
 

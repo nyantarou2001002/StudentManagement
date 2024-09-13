@@ -15,35 +15,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import java.util.List;
 import java.util.Set;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.Mockito;
 import org.springdoc.api.OpenApiResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
+import raisetech.student.management.data.CourseSearchCriteria;
 import raisetech.student.management.data.CourseStatus;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentCourse;
-import raisetech.student.management.domain.CourseDetail;
-import raisetech.student.management.domain.StudentDetail;
+import raisetech.student.management.data.StudentSearchCriteria;
 import raisetech.student.management.service.StudentService;
 
 
@@ -71,22 +62,26 @@ class StudentControllerTest {
 
   @Test
   void 受講生詳細の一覧検索が実行できて空のリストが返ってくること() throws Exception{
-    Boolean deleted = false;
+    //Boolean deleted = false;
+    StudentSearchCriteria criteria = new StudentSearchCriteria();
 
     mockMvc.perform(MockMvcRequestBuilders.get("/studentList")
-            .param("deleted", String.valueOf(deleted))) // paramをgetの直後に
+                .flashAttr("criteria", criteria))
+            //.param("deleted", String.valueOf(deleted))) // paramをgetの直後に
         .andExpect(status().isOk());
 
-    Mockito.verify(service, Mockito.times(1)).searchStudentList(deleted);
+    Mockito.verify(service, Mockito.times(1)).searchStudentList(any(StudentSearchCriteria.class));
   }
 
 
   @Test
   void 受講生コース詳細の一覧検索が実行できて空リストが返ってくること() throws Exception {
-      mockMvc.perform(MockMvcRequestBuilders.get("/studentList/courses"))
+    CourseSearchCriteria criteria = new CourseSearchCriteria();
+
+      mockMvc.perform(MockMvcRequestBuilders.get("/studentList/courses").flashAttr("criteria", criteria))
           .andExpect(status().isOk());
 
-      verify(service, times(1)).searchStudentCourseList();
+      verify(service, times(1)).searchStudentCourseList(any(CourseSearchCriteria.class));
 
   }
 

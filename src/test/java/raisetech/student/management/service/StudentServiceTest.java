@@ -1,33 +1,45 @@
 package raisetech.student.management.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springdoc.api.OpenApiResourceNotFoundException;
-import org.springframework.web.client.ResourceAccessException;
+import org.springframework.cglib.core.Local;
+import org.xmlunit.diff.Comparison.Detail;
 import raisetech.student.management.controller.converter.CourseConverter;
 import raisetech.student.management.controller.converter.StudentConverter;
+import raisetech.student.management.data.CourseSearchCriteria;
 import raisetech.student.management.data.CourseStatus;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentCourse;
+import raisetech.student.management.data.StudentSearchCriteria;
 import raisetech.student.management.domain.CourseDetail;
 import raisetech.student.management.domain.IntegratedDetail;
 import raisetech.student.management.domain.StudentDetail;
@@ -47,111 +59,283 @@ class StudentServiceTest {
 
   private StudentService sut;
 
+  @InjectMocks
+  private StudentService studentService;
+
+
+
+
+
+  //@BeforeEach
+  //void before() {
+    //sut = new StudentService(repository, studentConverter,courseConverter);
+  //}
+
+
+
+
+
+
+
+
+
+  //@Test
+  //void 受講生詳細の一覧検索＿deletedがnullの場合にリポジトリとコンバーターの処理が適切に呼び出せていること(){
+    //Boolean deleted = null;
+
+    //List<Student> studentList = new ArrayList<>();
+    //List<StudentCourse> studentCourseList = new ArrayList<>();
+    //List<StudentDetail> studentDetails = createTestStudentDetails();
+
+//    StudentCourse studentCourse1 = new StudentCourse("666","555", "Javaコース",
+ //       LocalDateTime.of(2024,8,3,0,0,0),
+  ////      LocalDateTime.of(2025,8,3,0,0,0),(111,"666","仮申込"));
+ //   StudentCourse studentCourse2 = new StudentCourse("777","555","AWSコース",
+  //      LocalDateTime.of(2024,9,1,0,0,0),
+  //      LocalDateTime.of(2025,9,1,0,0,0),(222,"666","本申込"));
+
+    //when(repository.search()).thenReturn(studentList);
+    //when(repository.searchStudentCourseList()).thenReturn(studentCourseList);
+    //when(studentConverter.convertStudentDetails(studentList, studentCourseList)).thenReturn(studentDetails);
+
+    //List<StudentDetail> actualStudentDetails = sut.searchStudentList(deleted);
+
+
+
+    //verify(repository, times(1)).search();
+    //verify(repository, times(1)).searchStudentCourseList();
+    //verify(studentConverter, times(1)).convertStudentDetails(studentList, studentCourseList);
+    //return new ArrayList<>(List.of(studentCourse1,studentCourse2));
+
+    //assertEquals(studentDetails, actualStudentDetails);
+    //assertEquals(2,actualStudentDetails.size());
+
+  //}
 
   @BeforeEach
-  void before() {
+  void before(){
     sut = new StudentService(repository, studentConverter,courseConverter);
   }
 
-  private static List<StudentDetail> createTestStudentDetails(){
-    Student activeStudent = new Student();
-    activeStudent.setDeleted(false);
-    StudentCourse activeStudentCourse1 = new StudentCourse();
-    StudentCourse activeStudentCourse2 = new StudentCourse();
-    List<StudentCourse> activeStudentCourses = new ArrayList<>(
-        List.of(activeStudentCourse1, activeStudentCourse2));
-    StudentDetail activeStudentDetail = new StudentDetail(activeStudent,activeStudentCourses);
+  //@Test
+  //void 受講生詳細の一覧検索＿deletedがfalseの場合にリポジトリとコンバーターの処理が適切に呼び出せていること(){
+    //Boolean deleted = false;
 
-    Student deletedStudent = new Student();
-    deletedStudent.setDeleted(true);
-    StudentCourse deletedStudentCourse1 = new StudentCourse();
-    StudentCourse deletedStudentCourse2 = new StudentCourse();
-    List<StudentCourse> deletedStudentCourses = new ArrayList<>(
-        List.of(deletedStudentCourse1,deletedStudentCourse2));
-    StudentDetail deletedStudentDetail = new StudentDetail(deletedStudent,deletedStudentCourses);
 
-    return new ArrayList<>(List.of(activeStudentDetail,deletedStudentDetail));
+  @Test
+  void 受講生詳細の一覧検索＿条件に応じてフィルタリングが行われること() {
+    // モックデータの準備
+    List<Student> mockStudents = Arrays.asList(
+        new Student("1", "John", "ジョン", "Johnny", "john@example.com", "Tokyo", 25, "男性", "テスト用", false),
+        new Student("2", "Jane", "ジェーン", "Janey", "jane@example.com", "Osaka", 30, "女性", "テスト用", false)
+    );
+
+    CourseStatus courseStatus1 = new CourseStatus(555, "1", "受講中");
+    CourseStatus courseStatus2 = new CourseStatus(666, "2", "受講中");
+    List<StudentCourse> mockStudentCourses = Arrays.asList(
+        new StudentCourse("1", "1", "Math", LocalDate.of(2023, 1, 10).atStartOfDay(), LocalDate.of(2023, 6, 10).atStartOfDay(), courseStatus1),
+        new StudentCourse("2", "2", "English", LocalDate.of(2023, 2, 15).atStartOfDay(), LocalDate.of(2023, 7, 15).atStartOfDay(), courseStatus2)
+    );
+
+    // 期待される結果の準備
+    StudentDetail studentDetail1 = new StudentDetail(mockStudents.get(0), List.of(mockStudentCourses.get(0)));  // John
+    StudentDetail studentDetail2 = new StudentDetail(mockStudents.get(1), List.of(mockStudentCourses.get(1)));  // Jane
+
+    // 検索条件の準備
+    StudentSearchCriteria criteria = new StudentSearchCriteria();
+    criteria.setName("John");  // John のみ
+    criteria.setMinAge(20);    // 25歳以上
+    criteria.setMaxAge(30);    // 30歳以下
+    criteria.setCourseName("Math"); // Math のみ
+
+    // モックの設定
+    when(repository.search()).thenReturn(mockStudents);
+    when(repository.searchStudentCourseList()).thenReturn(mockStudentCourses);
+    when(studentConverter.convertStudentDetails(mockStudents, mockStudentCourses)).thenReturn(Arrays.asList(studentDetail1, studentDetail2));
+
+    // テスト実行
+    List<StudentDetail> result = studentService.searchStudentList(criteria);
+
+    // 期待される結果
+    List<StudentDetail> expected = List.of(studentDetail1);
+
+    // 結果の検証
+    assertEquals(expected, result);
   }
 
 
 
 
+  @Test
+  void 受講生詳細の一覧検索＿検索条件が指定されていない場合に全件取得が行われること() {
+    // モックデータの準備（フィルタリングなしのケース）
+    List<Student> mockStudents = Arrays.asList(
+        new Student("1", "John", "ジョン", "Johnny", "john@example.com", "Tokyo", 25, "男性","テスト用", false),
+        new Student("2", "Jane", "ジェーン", "Janey", "jane@example.com", "Osaka", 30, "女性","テスト用", false)
+    );
+
+    CourseStatus courseStatus1 = new CourseStatus(555,"1","受講中");
+    CourseStatus courseStatus2 = new CourseStatus(666,"2","受講中");
+    List<StudentCourse> mockStudentCourses = Arrays.asList(
+        new StudentCourse("1","1", "Math", LocalDate.of(2023, 1, 10).atStartOfDay(), LocalDate.of(2023, 6, 10).atStartOfDay(),courseStatus1),
+        new StudentCourse("2","2", "English", LocalDate.of(2023, 2, 15).atStartOfDay(), LocalDate.of(2023, 7, 15).atStartOfDay(),courseStatus2)
+    );
+
+    List<StudentDetail> mockStudentDetails = Arrays.asList(
+        new StudentDetail(mockStudents.get(0), List.of(mockStudentCourses.get(0))),
+        new StudentDetail(mockStudents.get(1), List.of(mockStudentCourses.get(1)))
+    );
+
+    // モックの設定
+    when(repository.search()).thenReturn(mockStudents);
+    when(repository.searchStudentCourseList()).thenReturn(mockStudentCourses);
+    when(studentConverter.convertStudentDetails(mockStudents, mockStudentCourses)).thenReturn(mockStudentDetails);
+
+    // 検索条件なしの設定
+    StudentSearchCriteria criteria = new StudentSearchCriteria();  // 全件取得
+
+    // テスト実行
+    List<StudentDetail> result = studentService.searchStudentList(criteria);
+
+    // 検証
+    assertThat(result).hasSize(2);
+
+    // メソッド呼び出しの検証
+    verify(repository).search();
+    verify(repository).searchStudentCourseList();
+    verify(studentConverter).convertStudentDetails(mockStudents, mockStudentCourses);
+  }
+
+
+
+
+  //@Test
+  //void 受講生詳細の一覧検索＿deletedがtrueの場合にリポジトリとコンバーターの処理が適切に呼び出せていること(){
+    //Boolean deleted = true;
+
+    //List<Student> studentList = new ArrayList<>();
+    //List<StudentCourse> studentCourseList = new ArrayList<>();
+    //List<StudentDetail> studentDetails = createTestStudentDetails();
+
+    //when(repository.search()).thenReturn(studentList);
+    //when(repository.searchStudentCourseList()).thenReturn(studentCourseList);
+    //when(studentConverter.convertStudentDetails(studentList, studentCourseList)).thenReturn(studentDetails);
+
+    //List<StudentDetail> actualStudentDetails = sut.searchStudentList(deleted);
+
+
+    //verify(repository, times(1)).search();
+    //verify(repository, times(1)).searchStudentCourseList();
+    //verify(studentConverter, times(1)).convertStudentDetails(studentList, studentCourseList);
+
+    //assertTrue(actualStudentDetails.getFirst().getStudent().isDeleted());
+    //assertEquals(1,actualStudentDetails.size());
+
+  //}
+
+
+  // //private static Stream<Arguments> provideStudentTestCases(){
+   // return Stream.of(
+      //  Arguments.of(new StudentSearchCriteria(null,null,null,
+      //      null,null,null,null,null,null,null,
+     //       null,null,null,null),2),
+
+     //   Arguments.of(new StudentSearchCriteria("坂田銀時", "サカタギントキ", "銀さん",
+     //       "sakata@example.com", "東京",20,30, "男性", false,"Javaコース",
+     //       LocalDate.of(2023,6,1),
+    //        LocalDate.of(2025,6,1),
+     //       LocalDate.of(2024,4,1),
+     //       LocalDate.of(2026,7,2)),1),
+
+    //    Arguments.of(new StudentSearchCriteria("吉田祥子", "ぽうぽ", "うーたん",
+     //           "wanwan@example.com","東京",20,25, "その他",false,"Javaコース",
+     //       LocalDate.of(1923,6,1),
+     //       LocalDate.of(1945,6,1),
+    //        LocalDate.of(1956,4,1),
+     //       LocalDate.of(1957,7,2)),0));
+  // }
+
 
   @Test
-  void 受講生詳細の一覧検索＿deletedがnullの場合にリポジトリとコンバーターの処理が適切に呼び出せていること(){
-    Boolean deleted = null;
+  void 受講生コース詳細の一覧検索＿引数に応じて適切に条件検索が行われること() {
+    // Arrange
+    CourseSearchCriteria criteria = new CourseSearchCriteria();
+    criteria.setCourseName("Java");
+    criteria.setStartDateFrom(LocalDate.of(2023, 1, 1));
+    criteria.setEndDateTo(LocalDate.of(2023, 12, 31));
+    criteria.setStatus("仮申込");
 
-    List<Student> studentList = new ArrayList<>();
-    List<StudentCourse> studentCourseList = new ArrayList<>();
-    List<StudentDetail> studentDetails = createTestStudentDetails();
+    List<StudentCourse> mockStudentCourses = Arrays.asList(
+        new StudentCourse("1","1", "Java", LocalDate.of(2023, 5, 1).atStartOfDay(),
+            LocalDate.of(2023, 11, 1).atStartOfDay(), new CourseStatus(888,"1", "仮申込")),
+        new StudentCourse("2","3", "Python", LocalDate.of(2023, 7, 1).atStartOfDay(),
+            LocalDate.of(2023, 9, 1).atStartOfDay(), new CourseStatus(999,"2", "本申込"))
+    );
 
-    when(repository.search()).thenReturn(studentList);
-    when(repository.searchStudentCourseList()).thenReturn(studentCourseList);
-    when(studentConverter.convertStudentDetails(studentList, studentCourseList)).thenReturn(studentDetails);
+    List<CourseStatus> mockCourseStatuses = Arrays.asList(
+        new CourseStatus(888,"1", "仮申込"),
+        new CourseStatus(999,"2", "本申込")
+    );
 
-    List<StudentDetail> actualStudentDetails = sut.searchStudentList(deleted);
+    when(repository.searchStudentCourseList()).thenReturn(mockStudentCourses);
+    when(repository.searchCourseStatusList()).thenReturn(mockCourseStatuses);
 
+    // Act
+    List<StudentCourse> result = studentService.searchStudentCourseList(criteria);
 
-    verify(repository, times(1)).search();
+    // Assert
+    assertEquals(1, result.size());
+    assertEquals("Java", result.get(0).getCourseName());
+    assertEquals("仮申込", result.get(0).getCourseStatus().getStatus());
+
+    // Verify repository method calls
     verify(repository, times(1)).searchStudentCourseList();
-    verify(studentConverter, times(1)).convertStudentDetails(studentList, studentCourseList);
-
-    assertEquals(studentDetails, actualStudentDetails);
-    assertEquals(2,actualStudentDetails.size());
-
-  }
-
-  @Test
-  void 受講生詳細の一覧検索＿deletedがfalseの場合にリポジトリとコンバーターの処理が適切に呼び出せていること(){
-    Boolean deleted = false;
-
-    List<Student> studentList = new ArrayList<>();
-    List<StudentCourse> studentCourseList = new ArrayList<>();
-    List<StudentDetail> studentDetails = createTestStudentDetails();
-
-    when(repository.search()).thenReturn(studentList);
-    when(repository.searchStudentCourseList()).thenReturn(studentCourseList);
-    when(studentConverter.convertStudentDetails(studentList, studentCourseList)).thenReturn(studentDetails);
-
-    List<StudentDetail> actualStudentDetails = sut.searchStudentList(deleted);
-
-
-    verify(repository, times(1)).search();
-    verify(repository, times(1)).searchStudentCourseList();
-    verify(studentConverter, times(1)).convertStudentDetails(studentList, studentCourseList);
-
-    assertFalse(studentDetails.get(0).getStudent().isDeleted());
-    assertEquals(1,actualStudentDetails.size());
-
-  }
-
-  @Test
-  void 受講生詳細の一覧検索＿deletedがtrueの場合にリポジトリとコンバーターの処理が適切に呼び出せていること(){
-    Boolean deleted = true;
-
-    List<Student> studentList = new ArrayList<>();
-    List<StudentCourse> studentCourseList = new ArrayList<>();
-    List<StudentDetail> studentDetails = createTestStudentDetails();
-
-    when(repository.search()).thenReturn(studentList);
-    when(repository.searchStudentCourseList()).thenReturn(studentCourseList);
-    when(studentConverter.convertStudentDetails(studentList, studentCourseList)).thenReturn(studentDetails);
-
-    List<StudentDetail> actualStudentDetails = sut.searchStudentList(deleted);
-
-
-    verify(repository, times(1)).search();
-    verify(repository, times(1)).searchStudentCourseList();
-    verify(studentConverter, times(1)).convertStudentDetails(studentList, studentCourseList);
-
-    assertTrue(actualStudentDetails.getFirst().getStudent().isDeleted());
-    assertEquals(1,actualStudentDetails.size());
-
+    verify(repository, times(1)).searchCourseStatusList();
   }
 
 
-  @Test
-  void 受講生詳細の検索＿リポジトリの処理が適切に呼び出せていること() {
+
+
+
+
+ //  @ParameterizedTest
+  // @MethodSource("provideCourseTestCases")
+   //void 受講生コース詳細の一覧検索＿引数に応じて適切に条件検索が行われること(CourseSearchCriteria criteria, int expectedResultCount) {
+
+ //    List<StudentCourse> studentCourseList = new ArrayList<>();
+ //    List<CourseStatus> courseStatusList = new ArrayList<>();
+  //   List<StudentDetail> studentDetails = createTestStudentDetails();
+
+  //   when(repository.searchStudentCourseList()).thenReturn(studentCourseList);
+  //   when(repository.searchCourseStatusList()).thenReturn(courseStatusList);
+
+  //   List<StudentCourse> actualStudentCourse = sut.searchStudentCourseList(criteria);
+
+  //   verify(repository, times(1)).searchStudentCourseList();
+  //   verify(repository, times(1)).searchCourseStatusList();
+
+  //   assertEquals(expectedResultCount, actualStudentCourse.size());
+ //  }
+
+ //  private static Stream<Arguments> provideCourseTestCases(){
+   // return Stream.of(
+   //     Arguments.of(new CourseSearchCriteria(null,
+   //         null,null,null,null,null),2),
+  //      Arguments.of(new CourseSearchCriteria("Javaコース",
+   //             LocalDate.of(2023,6,1),
+   //             LocalDate.of(2025,6,1),
+   //             LocalDate.of(2024,4,1),
+   //             LocalDate.of(2026,7,2), "受講中"),1),
+
+   //     Arguments.of(new CourseSearchCriteria("Javaコース",
+   //         LocalDate.of(1984,6,1),
+    //        LocalDate.of(1991,6,1),
+   //         LocalDate.of(2000,4,1),
+   //         LocalDate.of(2010,7,2), "受講中"),0));
+  // }
+
+    @Test
+    void 受講生詳細の検索＿リポジトリの処理が適切に呼び出せていること() {
     String id = "999";
     Student student = new Student();
     student.setId(id);
@@ -171,7 +355,7 @@ class StudentServiceTest {
   void 受講生コース情報の検索＿受講生コースIDに紐づくコース申込状況と受講生情報が返ってくること() throws Exception {
     int id = 555;
     StudentCourse studentCourse = new StudentCourse();
-    studentCourse.setId(String.valueOf(id));
+    studentCourse.setId(java.lang.String.valueOf(id));
 
     CourseStatus courseStatus = new CourseStatus();
     courseStatus.setCourseId(studentCourse.getId());
@@ -214,9 +398,9 @@ class StudentServiceTest {
 
   @Test
   void 受講生詳細の登録＿リポジトリの処理が適切に呼び出せている上に受講生コース情報の初期情報が登録されてコースの申込状況がインスタンス化されること() {
-    String studentId = "0";
-    String courseId1 = "1";
-    String courseId2 = "2";
+    java.lang.String studentId = "0";
+    java.lang.String courseId1 = "1";
+    java.lang.String courseId2 = "2";
 
     Student student = new Student();
     student.setId(studentId);
