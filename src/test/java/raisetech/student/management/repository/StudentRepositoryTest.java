@@ -206,7 +206,7 @@ class StudentRepositoryTest {
 
   @Test
   void コース申込状況の更新が行えること(){
-    java.lang.String courseId = "1";
+    String courseId = "1";
     CourseStatus courseStatus = sut.searchCourseStatus(Integer.parseInt(courseId));
     courseStatus.setStatus("本申込");
 
@@ -216,11 +216,6 @@ class StudentRepositoryTest {
     assertEquals("本申込", actual.getStatus());
 
   }
-
-
-
-
-
 
 
 

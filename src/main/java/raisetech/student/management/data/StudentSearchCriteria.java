@@ -58,6 +58,4 @@ public class StudentSearchCriteria {
   @Schema(description = "コース受講終了日の範囲検索(終点)")
   private LocalDate endDateTo;
 
-
-
 }

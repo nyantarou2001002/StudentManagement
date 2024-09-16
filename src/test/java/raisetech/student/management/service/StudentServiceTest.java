@@ -65,61 +65,11 @@ class StudentServiceTest {
 
 
 
-
-  //@BeforeEach
-  //void before() {
-    //sut = new StudentService(repository, studentConverter,courseConverter);
-  //}
-
-
-
-
-
-
-
-
-
-  //@Test
-  //void 受講生詳細の一覧検索＿deletedがnullの場合にリポジトリとコンバーターの処理が適切に呼び出せていること(){
-    //Boolean deleted = null;
-
-    //List<Student> studentList = new ArrayList<>();
-    //List<StudentCourse> studentCourseList = new ArrayList<>();
-    //List<StudentDetail> studentDetails = createTestStudentDetails();
-
-//    StudentCourse studentCourse1 = new StudentCourse("666","555", "Javaコース",
- //       LocalDateTime.of(2024,8,3,0,0,0),
-  ////      LocalDateTime.of(2025,8,3,0,0,0),(111,"666","仮申込"));
- //   StudentCourse studentCourse2 = new StudentCourse("777","555","AWSコース",
-  //      LocalDateTime.of(2024,9,1,0,0,0),
-  //      LocalDateTime.of(2025,9,1,0,0,0),(222,"666","本申込"));
-
-    //when(repository.search()).thenReturn(studentList);
-    //when(repository.searchStudentCourseList()).thenReturn(studentCourseList);
-    //when(studentConverter.convertStudentDetails(studentList, studentCourseList)).thenReturn(studentDetails);
-
-    //List<StudentDetail> actualStudentDetails = sut.searchStudentList(deleted);
-
-
-
-    //verify(repository, times(1)).search();
-    //verify(repository, times(1)).searchStudentCourseList();
-    //verify(studentConverter, times(1)).convertStudentDetails(studentList, studentCourseList);
-    //return new ArrayList<>(List.of(studentCourse1,studentCourse2));
-
-    //assertEquals(studentDetails, actualStudentDetails);
-    //assertEquals(2,actualStudentDetails.size());
-
-  //}
-
   @BeforeEach
   void before(){
     sut = new StudentService(repository, studentConverter,courseConverter);
   }
 
-  //@Test
-  //void 受講生詳細の一覧検索＿deletedがfalseの場合にリポジトリとコンバーターの処理が適切に呼び出せていること(){
-    //Boolean deleted = false;
 
 
   @Test
@@ -208,54 +158,6 @@ class StudentServiceTest {
 
 
 
-
-  //@Test
-  //void 受講生詳細の一覧検索＿deletedがtrueの場合にリポジトリとコンバーターの処理が適切に呼び出せていること(){
-    //Boolean deleted = true;
-
-    //List<Student> studentList = new ArrayList<>();
-    //List<StudentCourse> studentCourseList = new ArrayList<>();
-    //List<StudentDetail> studentDetails = createTestStudentDetails();
-
-    //when(repository.search()).thenReturn(studentList);
-    //when(repository.searchStudentCourseList()).thenReturn(studentCourseList);
-    //when(studentConverter.convertStudentDetails(studentList, studentCourseList)).thenReturn(studentDetails);
-
-    //List<StudentDetail> actualStudentDetails = sut.searchStudentList(deleted);
-
-
-    //verify(repository, times(1)).search();
-    //verify(repository, times(1)).searchStudentCourseList();
-    //verify(studentConverter, times(1)).convertStudentDetails(studentList, studentCourseList);
-
-    //assertTrue(actualStudentDetails.getFirst().getStudent().isDeleted());
-    //assertEquals(1,actualStudentDetails.size());
-
-  //}
-
-
-  // //private static Stream<Arguments> provideStudentTestCases(){
-   // return Stream.of(
-      //  Arguments.of(new StudentSearchCriteria(null,null,null,
-      //      null,null,null,null,null,null,null,
-     //       null,null,null,null),2),
-
-     //   Arguments.of(new StudentSearchCriteria("坂田銀時", "サカタギントキ", "銀さん",
-     //       "sakata@example.com", "東京",20,30, "男性", false,"Javaコース",
-     //       LocalDate.of(2023,6,1),
-    //        LocalDate.of(2025,6,1),
-     //       LocalDate.of(2024,4,1),
-     //       LocalDate.of(2026,7,2)),1),
-
-    //    Arguments.of(new StudentSearchCriteria("吉田祥子", "ぽうぽ", "うーたん",
-     //           "wanwan@example.com","東京",20,25, "その他",false,"Javaコース",
-     //       LocalDate.of(1923,6,1),
-     //       LocalDate.of(1945,6,1),
-    //        LocalDate.of(1956,4,1),
-     //       LocalDate.of(1957,7,2)),0));
-  // }
-
-
   @Test
   void 受講生コース詳細の一覧検索＿引数に応じて適切に条件検索が行われること() {
     // Arrange
@@ -296,43 +198,6 @@ class StudentServiceTest {
 
 
 
-
-
- //  @ParameterizedTest
-  // @MethodSource("provideCourseTestCases")
-   //void 受講生コース詳細の一覧検索＿引数に応じて適切に条件検索が行われること(CourseSearchCriteria criteria, int expectedResultCount) {
-
- //    List<StudentCourse> studentCourseList = new ArrayList<>();
- //    List<CourseStatus> courseStatusList = new ArrayList<>();
-  //   List<StudentDetail> studentDetails = createTestStudentDetails();
-
-  //   when(repository.searchStudentCourseList()).thenReturn(studentCourseList);
-  //   when(repository.searchCourseStatusList()).thenReturn(courseStatusList);
-
-  //   List<StudentCourse> actualStudentCourse = sut.searchStudentCourseList(criteria);
-
-  //   verify(repository, times(1)).searchStudentCourseList();
-  //   verify(repository, times(1)).searchCourseStatusList();
-
-  //   assertEquals(expectedResultCount, actualStudentCourse.size());
- //  }
-
- //  private static Stream<Arguments> provideCourseTestCases(){
-   // return Stream.of(
-   //     Arguments.of(new CourseSearchCriteria(null,
-   //         null,null,null,null,null),2),
-  //      Arguments.of(new CourseSearchCriteria("Javaコース",
-   //             LocalDate.of(2023,6,1),
-   //             LocalDate.of(2025,6,1),
-   //             LocalDate.of(2024,4,1),
-   //             LocalDate.of(2026,7,2), "受講中"),1),
-
-   //     Arguments.of(new CourseSearchCriteria("Javaコース",
-   //         LocalDate.of(1984,6,1),
-    //        LocalDate.of(1991,6,1),
-   //         LocalDate.of(2000,4,1),
-   //         LocalDate.of(2010,7,2), "受講中"),0));
-  // }
 
     @Test
     void 受講生詳細の検索＿リポジトリの処理が適切に呼び出せていること() {
@@ -488,9 +353,6 @@ class StudentServiceTest {
 
     verify(repository, times(1)).updateCourseStatus(courseStatus);
   }
-
-
-
 
 
 }

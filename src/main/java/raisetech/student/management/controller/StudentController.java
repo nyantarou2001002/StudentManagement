@@ -54,8 +54,6 @@ public class StudentController {
    */
   @Operation(summary = "一覧検索", description = "受講生の一覧を検索します。")
   @GetMapping("/studentList")
-  //public List<StudentDetail> getStudentList(
-      //@Parameter(description = "受講生の削除フラグ") @RequestParam(required = false) Boolean deleted) {
   public List<StudentDetail> getStudentList(@Valid @ModelAttribute StudentSearchCriteria criteria){
     return service.searchStudentList(criteria);
   }
@@ -167,4 +165,3 @@ public class StudentController {
 
 
 }
-

@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import jdk.jshell.Snippet.Status;
 import org.springdoc.api.OpenApiResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,11 +43,12 @@ public class StudentService {
     this.courseConverter = courseConverter;
   }
 
-  private boolean doesStringContainSubstring(String targetValue, String criteriaValue){
+  //targetValue が criteriaValue を含むかどうかを判定するメソッドです。
+  private boolean containsSubstring(String targetValue, String criteriaValue){
     return criteriaValue == null || targetValue.contains(criteriaValue);
   }
 
-  private boolean isIntMoreThan(Integer targetValue, Integer criteriaValue){
+  private boolean isIntegerMoreThan(Integer targetValue, Integer criteriaValue){
     return criteriaValue == null || targetValue >= criteriaValue;
   }
 
@@ -95,12 +95,12 @@ public class StudentService {
 
     return studentDetails.stream()
         .filter(studentDetail ->
-            doesStringContainSubstring(studentDetail.getStudent().getName(), criteria.getName()) &&
-                doesStringContainSubstring(studentDetail.getStudent().getKanaName(), criteria.getKanaName()) &&
-                doesStringContainSubstring(studentDetail.getStudent().getNickname(), criteria.getNickname()) &&
-                doesStringContainSubstring(studentDetail.getStudent().getEmail(), criteria.getEmail()) &&
-                doesStringContainSubstring(studentDetail.getStudent().getArea(), criteria.getArea()) &&
-                isIntMoreThan(studentDetail.getStudent().getAge(), criteria.getMinAge()) &&
+            containsSubstring(studentDetail.getStudent().getName(), criteria.getName()) &&
+                containsSubstring(studentDetail.getStudent().getKanaName(), criteria.getKanaName()) &&
+                containsSubstring(studentDetail.getStudent().getNickname(), criteria.getNickname()) &&
+                containsSubstring(studentDetail.getStudent().getEmail(), criteria.getEmail()) &&
+                containsSubstring(studentDetail.getStudent().getArea(), criteria.getArea()) &&
+                isIntegerMoreThan(studentDetail.getStudent().getAge(), criteria.getMinAge()) &&
                 isIntegerLessThan(studentDetail.getStudent().getAge(), criteria.getMaxAge()) &&
                 isSexMatching(studentDetail.getStudent().getSex(), criteria.getSex()) &&
                 isBooleanEqual(studentDetail.getStudent().isDeleted(), criteria.getDeleted()) &&
@@ -108,7 +108,7 @@ public class StudentService {
                 !studentDetail.getStudentCourseList().isEmpty() &&
                 studentDetail.getStudentCourseList().stream()
                     .anyMatch(studentCourse ->
-                        doesStringContainSubstring(studentCourse.getCourseName(), criteria.getCourseName()) &&
+                        containsSubstring(studentCourse.getCourseName(), criteria.getCourseName()) &&
                             isDateOnOrAfter(studentCourse.getCourseStartAt().toLocalDate(), criteria.getStartDateFrom()) &&
                             isDateOnOrBefore(studentCourse.getCourseStartAt().toLocalDate(), criteria.getStartDateTo()) &&
                             isDateOnOrAfter(studentCourse.getCourseEndAt().toLocalDate(), criteria.getEndDateFrom()) &&
@@ -119,7 +119,7 @@ public class StudentService {
           // 指定された条件に一致するコースだけをフィルタリング
           List<StudentCourse> filteredCourses = studentDetail.getStudentCourseList().stream()
               .filter(studentCourse ->
-                  doesStringContainSubstring(studentCourse.getCourseName(), criteria.getCourseName()) &&
+                  containsSubstring(studentCourse.getCourseName(), criteria.getCourseName()) &&
                       isDateOnOrAfter(studentCourse.getCourseStartAt().toLocalDate(), criteria.getStartDateFrom()) &&
                       isDateOnOrBefore(studentCourse.getCourseStartAt().toLocalDate(), criteria.getStartDateTo()) &&
                       isDateOnOrAfter(studentCourse.getCourseEndAt().toLocalDate(), criteria.getEndDateFrom()) &&
@@ -142,15 +142,12 @@ public class StudentService {
    *
    * @return　コース詳細情報一覧
    */
-  //public List<CourseDetail> searchStudentCourseList(){
   public List<StudentCourse> searchStudentCourseList(CourseSearchCriteria criteria){
     List<StudentCourse> studentCourseList = repository.searchStudentCourseList();
     List<CourseStatus> courseStatusList = repository.searchCourseStatusList();
 
-    //return courseConverter.convertCourseDetails(studentCourseList, courseStatusList);
-    //return  studentCourseList;
     return studentCourseList.stream()
-        .filter(studentCourse -> doesStringContainSubstring(
+        .filter(studentCourse -> containsSubstring(
             studentCourse.getCourseName(), criteria.getCourseName()))
 
         .filter(studentCourse -> isDateOnOrAfter(
@@ -188,7 +185,6 @@ public class StudentService {
 
   }
 
-  //public CourseDetail searchStudentCourse(int id) {
   public StudentCourse searchStudentCourse(int id) {
     StudentCourse studentCourse = repository.searchStudentCourse(id);
 
@@ -296,6 +292,5 @@ public class StudentService {
   public void updateCourseStatus(CourseStatus courseStatus) throws Exception{
     repository.updateCourseStatus(courseStatus);
   }
-
 
 }

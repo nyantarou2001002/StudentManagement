@@ -62,12 +62,10 @@ class StudentControllerTest {
 
   @Test
   void 受講生詳細の一覧検索が実行できて空のリストが返ってくること() throws Exception{
-    //Boolean deleted = false;
     StudentSearchCriteria criteria = new StudentSearchCriteria();
 
     mockMvc.perform(MockMvcRequestBuilders.get("/studentList")
                 .flashAttr("criteria", criteria))
-            //.param("deleted", String.valueOf(deleted))) // paramをgetの直後に
         .andExpect(status().isOk());
 
     Mockito.verify(service, Mockito.times(1)).searchStudentList(any(StudentSearchCriteria.class));
@@ -284,7 +282,6 @@ class StudentControllerTest {
 
 
   }
-
 
 
 

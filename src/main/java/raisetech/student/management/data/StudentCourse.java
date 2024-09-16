@@ -24,9 +24,4 @@ public class StudentCourse {
   private LocalDateTime courseEndAt;
   private CourseStatus courseStatus;
 
-
-
-
-
-
 }

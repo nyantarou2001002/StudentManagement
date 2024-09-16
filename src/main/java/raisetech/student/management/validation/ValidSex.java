@@ -21,6 +21,4 @@ public @interface ValidSex {
 
   Class<? extends Payload>[] payload() default {};
 
-
-
 }
