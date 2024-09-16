@@ -7,11 +7,6 @@ import lombok.Getter;
 
 public class StatusValidator implements ConstraintValidator<ValidStatus, String> {
 
-  // enumの定義をこのクラス内に含めます
-  //public enum Status {
-  //  仮申込, 本申込, 受講中, 受講終了;
-  //}
-
   @Getter
   public enum Status {
     PRELIMINARY_APPLICATION("仮申込"),FINAL_APPLICATION("本申込"),IN_PROGRESS("受講中"),COURSE_COMPLETED("受講終了");
@@ -23,8 +18,6 @@ public class StatusValidator implements ConstraintValidator<ValidStatus, String>
     }
 
   }
-
-
 
 
   @Override
