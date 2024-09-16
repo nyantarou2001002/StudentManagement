@@ -52,7 +52,7 @@ class StudentRepositoryTest {
   @Test
   void 指定した受講生IDに紐づいて受講生の検索が行えること(){
     int id = 4;
-    Student actual = sut.searchStudent(java.lang.String.valueOf(id));
+    Student actual = sut.searchStudent(String.valueOf(id));
     assertEquals("佐藤涼子", actual.getName());
   }
 
@@ -72,7 +72,7 @@ class StudentRepositoryTest {
   @Test
   void 受講生IDに紐づく受講生コース情報の検索が行えること(){
     int studentId = 4;
-    List<StudentCourse> actual = sut.searchStudentCourse(java.lang.String.valueOf(studentId));
+    List<StudentCourse> actual = sut.searchStudentCourse(String.valueOf(studentId));
     assertEquals(1,actual.size());
     assertEquals("Web制作コース", actual.get(0).getCourseName());
   }
@@ -85,7 +85,7 @@ class StudentRepositoryTest {
 
   @Test
   void 指定した受講生コースIDに紐づくコース申込状況の検索が行えること(){
-    java.lang.String courseId = "5";
+    String courseId = "5";
     CourseStatus actual = sut.searchCourseStatus(Integer.parseInt(courseId));
     assertEquals("仮申込", actual.getStatus());
 
@@ -165,7 +165,7 @@ class StudentRepositoryTest {
   @Test
   void 受講生の更新が行えること(){
     int id = 3;
-    Student student = sut.searchStudent(java.lang.String.valueOf(id));
+    Student student = sut.searchStudent(String.valueOf(id));
     student.setName("田中花子2");
     student.setKanaName("タナカハナコ2");
     student.setNickname("ハナ2");
@@ -178,7 +178,7 @@ class StudentRepositoryTest {
 
     sut.updateStudent(student);
 
-    Student actual = sut.searchStudent(java.lang.String.valueOf(id));
+    Student actual = sut.searchStudent(String.valueOf(id));
     assertEquals("田中花子2", actual.getName());
     assertEquals("タナカハナコ2", actual.getKanaName());
     assertEquals("ハナ2", actual.getNickname());
@@ -194,12 +194,12 @@ class StudentRepositoryTest {
   @Test
   void 受講生コース情報のコース名の更新が行えること(){
     int studentId = 5;
-    List<StudentCourse> studentCourses = sut.searchStudentCourse(java.lang.String.valueOf(studentId));
+    List<StudentCourse> studentCourses = sut.searchStudentCourse(String.valueOf(studentId));
     studentCourses.get(0).setCourseName("AWSコース2");
 
     sut.updateStudentCourse(studentCourses.get(0));
 
-    List<StudentCourse> actual = sut.searchStudentCourse(java.lang.String.valueOf(studentId));
+    List<StudentCourse> actual = sut.searchStudentCourse(String.valueOf(studentId));
     assertEquals("AWSコース2", actual.get(0).getCourseName());
 
   }

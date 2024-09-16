@@ -131,12 +131,6 @@ public class StudentService {
         .toList();
   }
 
-
-
-
-
-
-
   /**
    * 受講生コース詳細一覧検索を行います。
    *
@@ -207,10 +201,6 @@ public class StudentService {
 
     return studentCourse;
   }
-
-
-
-
 
 
 

@@ -2,20 +2,21 @@ package raisetech.student.management.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import lombok.Getter;
 
 public class SexValidator implements ConstraintValidator<ValidSex, String> {
 
- // @Override
-  //public boolean isValid(String value, ConstraintValidatorContext context){
-    //if(value == null){
-     // return true;
-   // }
-  //  return value.equals("男性") || value.equals("女性") || value.equals("その他");
-  //}
-
   // enumの定義をこのクラス内に含めます
+  @Getter
   public enum Sex {
-    男性, 女性, その他;
+    MALE("男性"),FEMALE("女性"),OTHERS("その他");
+
+    private final String japaneseName;
+
+    Sex(String japaneseName){
+      this.japaneseName = japaneseName;
+    }
+
   }
 
   @Override
