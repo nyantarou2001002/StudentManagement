@@ -220,7 +220,7 @@ class StudentServiceTest {
   void 受講生コース情報の検索＿受講生コースIDに紐づくコース申込状況と受講生情報が返ってくること() throws Exception {
     int id = 555;
     StudentCourse studentCourse = new StudentCourse();
-    studentCourse.setId(java.lang.String.valueOf(id));
+    studentCourse.setId(String.valueOf(id));
 
     CourseStatus courseStatus = new CourseStatus();
     courseStatus.setCourseId(studentCourse.getId());
@@ -263,9 +263,9 @@ class StudentServiceTest {
 
   @Test
   void 受講生詳細の登録＿リポジトリの処理が適切に呼び出せている上に受講生コース情報の初期情報が登録されてコースの申込状況がインスタンス化されること() {
-    java.lang.String studentId = "0";
-    java.lang.String courseId1 = "1";
-    java.lang.String courseId2 = "2";
+    String studentId = "0";
+    String courseId1 = "1";
+    String courseId2 = "2";
 
     Student student = new Student();
     student.setId(studentId);
