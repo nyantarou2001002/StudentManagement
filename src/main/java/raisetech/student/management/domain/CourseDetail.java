@@ -22,7 +22,4 @@ public class CourseDetail {
   @Valid
   private CourseStatus courseStatus;
 
-
-
-
 }

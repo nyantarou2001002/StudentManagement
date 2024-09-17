@@ -1,19 +1,22 @@
 package raisetech.student.management.service;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.springdoc.api.OpenApiResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import raisetech.student.management.controller.converter.CourseConverter;
 import raisetech.student.management.controller.converter.StudentConverter;
+import raisetech.student.management.data.CourseSearchCriteria;
 import raisetech.student.management.data.CourseStatus;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentCourse;
+import raisetech.student.management.data.StudentSearchCriteria;
 import raisetech.student.management.domain.CourseDetail;
 import raisetech.student.management.domain.IntegratedDetail;
 import raisetech.student.management.domain.StudentDetail;
@@ -40,6 +43,43 @@ public class StudentService {
     this.courseConverter = courseConverter;
   }
 
+  //targetValue が criteriaValue を含むかどうかを判定するメソッドです。
+  private boolean containsSubstring(String targetValue, String criteriaValue){
+    return criteriaValue == null || targetValue.contains(criteriaValue);
+  }
+
+  private boolean isIntegerMoreThan(Integer targetValue, Integer criteriaValue){
+    return criteriaValue == null || targetValue >= criteriaValue;
+  }
+
+  private boolean isIntegerLessThan(Integer targetValue, Integer criteriaValue){
+    return criteriaValue == null || targetValue <= criteriaValue;
+  }
+
+  private boolean isBooleanEqual(Boolean targetValue, Boolean criteriaValue){
+    return criteriaValue == null || targetValue == criteriaValue;
+  }
+
+  private boolean isDateOnOrAfter(LocalDate targetDate, LocalDate criteriaDate){
+    return criteriaDate == null || targetDate.isAfter(criteriaDate);
+  }
+
+  private boolean isDateOnOrBefore(LocalDate targetValue, LocalDate criteriaValue){
+    return criteriaValue == null || targetValue.isBefore(criteriaValue);
+  }
+
+  private boolean isSexMatching(String targetValue, String criteriaValue){
+    return criteriaValue == null || Objects.equals(targetValue, criteriaValue);
+  }
+
+  private boolean isStatusMatching(String criteriaValue, String targetValue) {
+    // status の String 比較を行う
+    return criteriaValue == null || targetValue.equals(criteriaValue);
+  }
+
+
+
+
 
 
   /**
@@ -48,15 +88,46 @@ public class StudentService {
    *
    * @return　受講生一覧(全件)
    */
-  public List<StudentDetail> searchStudentList(Boolean deleted){
+  public List<StudentDetail> searchStudentList(StudentSearchCriteria criteria) {
     List<Student> studentList = repository.search();
     List<StudentCourse> studentCourseList = repository.searchStudentCourseList();
     List<StudentDetail> studentDetails = studentConverter.convertStudentDetails(studentList, studentCourseList);
 
-    //return converter.convertStudentDetails(studentList, studentCourseList);
     return studentDetails.stream()
         .filter(studentDetail ->
-            deleted == null || studentDetail.getStudent().isDeleted() == deleted)
+            containsSubstring(studentDetail.getStudent().getName(), criteria.getName()) &&
+                containsSubstring(studentDetail.getStudent().getKanaName(), criteria.getKanaName()) &&
+                containsSubstring(studentDetail.getStudent().getNickname(), criteria.getNickname()) &&
+                containsSubstring(studentDetail.getStudent().getEmail(), criteria.getEmail()) &&
+                containsSubstring(studentDetail.getStudent().getArea(), criteria.getArea()) &&
+                isIntegerMoreThan(studentDetail.getStudent().getAge(), criteria.getMinAge()) &&
+                isIntegerLessThan(studentDetail.getStudent().getAge(), criteria.getMaxAge()) &&
+                isSexMatching(studentDetail.getStudent().getSex(), criteria.getSex()) &&
+                isBooleanEqual(studentDetail.getStudent().isDeleted(), criteria.getDeleted()) &&
+                studentDetail.getStudentCourseList() != null &&
+                !studentDetail.getStudentCourseList().isEmpty() &&
+                studentDetail.getStudentCourseList().stream()
+                    .anyMatch(studentCourse ->
+                        containsSubstring(studentCourse.getCourseName(), criteria.getCourseName()) &&
+                            isDateOnOrAfter(studentCourse.getCourseStartAt().toLocalDate(), criteria.getStartDateFrom()) &&
+                            isDateOnOrBefore(studentCourse.getCourseStartAt().toLocalDate(), criteria.getStartDateTo()) &&
+                            isDateOnOrAfter(studentCourse.getCourseEndAt().toLocalDate(), criteria.getEndDateFrom()) &&
+                            isDateOnOrBefore(studentCourse.getCourseEndAt().toLocalDate(), criteria.getEndDateTo())
+                    )
+        )
+        .peek(studentDetail -> {
+          // 指定された条件に一致するコースだけをフィルタリング
+          List<StudentCourse> filteredCourses = studentDetail.getStudentCourseList().stream()
+              .filter(studentCourse ->
+                  containsSubstring(studentCourse.getCourseName(), criteria.getCourseName()) &&
+                      isDateOnOrAfter(studentCourse.getCourseStartAt().toLocalDate(), criteria.getStartDateFrom()) &&
+                      isDateOnOrBefore(studentCourse.getCourseStartAt().toLocalDate(), criteria.getStartDateTo()) &&
+                      isDateOnOrAfter(studentCourse.getCourseEndAt().toLocalDate(), criteria.getEndDateFrom()) &&
+                      isDateOnOrBefore(studentCourse.getCourseEndAt().toLocalDate(), criteria.getEndDateTo())
+              )
+              .toList();
+          studentDetail.setStudentCourseList(filteredCourses);
+        })
         .toList();
   }
 
@@ -65,13 +136,31 @@ public class StudentService {
    *
    * @return　コース詳細情報一覧
    */
-  //public List<CourseDetail> searchStudentCourseList(){
-  public List<StudentCourse> searchStudentCourseList(){
+  public List<StudentCourse> searchStudentCourseList(CourseSearchCriteria criteria){
     List<StudentCourse> studentCourseList = repository.searchStudentCourseList();
     List<CourseStatus> courseStatusList = repository.searchCourseStatusList();
 
-    //return courseConverter.convertCourseDetails(studentCourseList, courseStatusList);
-    return  studentCourseList;
+    return studentCourseList.stream()
+        .filter(studentCourse -> containsSubstring(
+            studentCourse.getCourseName(), criteria.getCourseName()))
+
+        .filter(studentCourse -> isDateOnOrAfter(
+            studentCourse.getCourseStartAt().toLocalDate(), criteria.getStartDateFrom()))
+
+        .filter(studentCourse -> isDateOnOrBefore(
+            studentCourse.getCourseStartAt().toLocalDate(), criteria.getStartDateTo()))
+
+        .filter(studentCourse -> isDateOnOrAfter(
+            studentCourse.getCourseEndAt().toLocalDate(), criteria.getEndDateFrom()))
+
+        .filter(studentCourse -> isDateOnOrBefore(
+            studentCourse.getCourseEndAt().toLocalDate(), criteria.getEndDateTo()))
+
+        .filter(studentCourse -> isStatusMatching(
+            studentCourse.getCourseStatus().getStatus(), criteria.getStatus()))
+
+
+        .toList();
 
   }
 
@@ -90,7 +179,6 @@ public class StudentService {
 
   }
 
-  //public CourseDetail searchStudentCourse(int id) {
   public StudentCourse searchStudentCourse(int id) {
     StudentCourse studentCourse = repository.searchStudentCourse(id);
 
@@ -113,10 +201,6 @@ public class StudentService {
 
     return studentCourse;
   }
-
-
-
-
 
 
 
@@ -198,6 +282,5 @@ public class StudentService {
   public void updateCourseStatus(CourseStatus courseStatus) throws Exception{
     repository.updateCourseStatus(courseStatus);
   }
-
 
 }
