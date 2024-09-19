@@ -52,6 +52,7 @@ jobs:
         script: |
           sudo yum update -y
           
+          sudo systemctl daemon-release
           if sudo systemctl status StudentManagement 2>&1 | grep "Active: active (running)" ; then
             sudo systemctl restart StudentManagement
           else
