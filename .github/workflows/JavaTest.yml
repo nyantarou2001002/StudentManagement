@@ -1,10 +1,8 @@
 
-name: Java CI with Gradle
+name: CI&CD
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
     branches: [ "main" ]
 
 env:
@@ -42,7 +40,7 @@ jobs:
         scp -o StrictHostKeyChecking=no -i private_key $SRC_PATH $EC2_USER@$EC2_HOST:$DEST_PATH
 
 
-    - name: SHH Application Deploy
+    - name: SSH Application Deploy
       uses: appleboy/ssh-action@master
       with:
         host: ${{env.EC2_HOST}}
@@ -52,7 +50,6 @@ jobs:
         script: |
           sudo yum update -y
           
-          sudo systemctl daemon-release
           if sudo systemctl status StudentManagement 2>&1 | grep "Active: active (running)" ; then
             sudo systemctl restart StudentManagement
           else
