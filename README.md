@@ -7,7 +7,7 @@
 StudentManagementALB-462394008.ap-northeast-1.elb.amazonaws.com/studentList
 
 受講生コース一覧検索
-
+StudentManagementALB-462394008.ap-northeast-1.elb.amazonaws.com/studentList/courses
 
 受講生コース詳細検索
 StudentManagementALB-462394008.ap-northeast-1.elb.amazonaws.com/studentList/courses/detail?id=1
